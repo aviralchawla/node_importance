@@ -1,0 +1,111 @@
+Metadata-Version: 2.4
+Name: node_importance
+Version: 0.1
+Summary: Python library for experimenting with contagion processes and influence maximization on graphs.
+Author-email: Aviral Chawla <achawla1@uvm.edu>
+License: Copyright 2025 Aviral Chawla
+        
+        Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+        
+        1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+        
+        2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+        
+        3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+        
+        THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+        
+Project-URL: Homepage, https://github.com/achawla1/node_importance
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: numpy
+Requires-Dist: scipy
+Requires-Dist: networkx
+Requires-Dist: numba
+Requires-Dist: tqdm
+Dynamic: license-file
+
+# Node Importance
+
+Node Importance is a Python library for experimenting and prototyping node importance problems in networks. The repository provides a wrapper around `networkx` and `graph-tool` with a standardized diffusion models. You can use it to simulate contagion processes, run influence maximization algorithms, and benchmark different approaches.
+
+## Features
+
+- Efficient `Network` graph wrapper with cached neighbour lookups.
+- Diffusion models for simulating spread:
+  - `IndependentCascade` – classic independent cascade contagion model.
+  - `WeightedCascade` – probabilistic spread based on per–edge weights.
+- Influence maximization algorithms:
+  - `Greedy` – iterative Monte‑Carlo selection.
+  - `Genetic` – evolutionary search over seed sets.
+  - `NeighborHop Genetic` - genetic algorithm with neighbor hops.
+- Benchmark scripts and example notebooks to get started quickly.
+
+## Installation
+
+Requires Python 3.10+.
+
+```bash
+git clone https://github.com/aviralchawla/node_importance.git
+cd node_importance
+pip install -r requirements.txt
+pip install -e ./
+```
+
+## Usage
+
+```python
+from node_importance.network import Network
+from node_importance.diffusion import IndependentCascade
+from node_importance.influence_maximization import Greedy
+
+# Build a network from an edge list
+G = Network()
+G.from_file("data/sample/Wiki-Vote.txt")
+
+# Run a diffusion simulation
+model = IndependentCascade(p=0.1)
+infected, history = model.run(G, {0})
+
+# Solve influence maximization
+greedy = Greedy(diffusion_model=model, num_samples=10)
+seed_set = greedy.fit(G, k=5)
+print(seed_set)
+```
+
+## Project Structure
+
+- `node_importance/` – core library code.
+- `tests/` – pytest test suite for diffusion models.
+- `data/sample/` – small sample graphs used by tests and examples.
+- `examples/` – Jupyter notebooks demonstrating usage.
+- `benchmark/` – scripts for profiling components.
+
+## Testing
+
+Run the test suite with:
+
+```bash
+pytest
+```
+
+## Contributing
+
+Pull requests are welcome. Please run the tests and ensure lint checks pass before submitting.
+
+## Upcoming Features
+[ ] Support for diffusion models (Linear Threshold, etc.)
+[ ] More influence maximization algorithms (CELF, Simulated Annealing, etc.)
+[ ] Suite of targeted immunization & sentinel surveillance algorithms.
+[ ] Speed up the diffusion process. (Kept is readable but will probably JIT it)
+[ ] Publish to PyPI for easier installation.
+
+## License
+
+Licensed under the BSD 3-Clause License. See [LICENSE](LICENSE) for details.
+

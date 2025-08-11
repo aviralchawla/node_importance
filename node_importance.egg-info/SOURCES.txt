@@ -1,0 +1,17 @@
+LICENSE
+README.md
+pyproject.toml
+setup.py
+node_importance/__init__.py
+node_importance/diffusion.py
+node_importance/network.py
+node_importance.egg-info/PKG-INFO
+node_importance.egg-info/SOURCES.txt
+node_importance.egg-info/dependency_links.txt
+node_importance.egg-info/requires.txt
+node_importance.egg-info/top_level.txt
+node_importance/influence_maximization/genetic.py
+node_importance/influence_maximization/greedy.py
+node_importance/utils/__init__.py
+tests/test_ic.py
+tests/test_wc.py
