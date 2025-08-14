@@ -70,7 +70,6 @@ Pull requests are welcome. Please run the tests and ensure lint checks pass befo
 - [ ] Support for diffusion models (Linear Threshold, etc.)
 - [ ] More influence maximization algorithms (CELF, Simulated Annealing, etc.)
 - [ ] Suite of targeted immunization & sentinel surveillance algorithms.
-- [ ] Speed up the diffusion process. (Kept is readable but will probably JIT it)
 - [ ] Publish to PyPI for easier installation.
 
 ## License
