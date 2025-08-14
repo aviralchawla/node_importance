@@ -33,11 +33,10 @@ class Greedy:
         self.diffusion_model = diffusion_model
         self.num_samples = num_samples
 
-    def _run_single(network: Network, diffusion_model: DiffusionModel, node: int, 
-                    selected_ndoes: Set[int], _unused=None) -> int:
+    def _run_single(self, network: Network,
+                    infected: Set[int], _unused=None) -> int:
         """Run one Monte-Carlo simulation and return outbreak size."""
-        infected = {node} | selected_ndoes
-        spread, _ = diffusion_model(
+        spread, _ = self.diffusion_model(
             network,
             infected
         )
@@ -65,7 +64,8 @@ class Greedy:
         results = []
         # great potential for parallelization here
         for _ in range(self.num_samples):
-            result = self._run_single(network, self.diffusion_model, node, selected_nodes)
+            infected = {node} | selected_nodes
+            result = self._run_single(network, infected)
             results.append(result)
 
         influence = sum(results) / self.num_samples

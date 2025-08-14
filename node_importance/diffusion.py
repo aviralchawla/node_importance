@@ -125,20 +125,24 @@ class IndependentCascade(DiffusionModel):
         Spread the infection from recently infected nodes to their neighbors.
         Contagion occurs with a fixed probability p for each edge.
         """
-        new_infected = set()
-        
-        for source in recently_infected:
-            neighbours = network.get_neighbors(source)
-            susceptible = set(neighbours) - active_nodes - immunized_nodes - new_infected
-            if not susceptible:
-                continue
-            # Run independent Bernoulli trials for each susceptible node
-            candidates = np.fromiter(susceptible, dtype=int)
-            new_infected.update(
-                candidates[np.random.uniform(0, 1, len(candidates)) < self.p]
-            )
+        uninfectable = active_nodes.union(immunized_nodes)
+
+        susceptible = [
+            v for u in recently_infected
+            for v in network.get_neighbors(u)
+            if v not in uninfectable
+            ]
+
+        if not susceptible:
+            return set()
+
+        probabilities = [self.p] * len(susceptible)
+        infection_outcomes = np.random.rand(len(probabilities)) < probabilities
+
+        new_infected = {susceptible[i] for i in range(len(susceptible)) if infection_outcomes[i]}
 
         return new_infected
+
 
 ######## WEIGHTED CASCADE #######
 
@@ -219,27 +223,23 @@ class WeightedCascade(DiffusionModel):
         """
         Spread the contagion from recently infected nodes to their neighbors based on edge weights.
         """
-        new_infected = set()
+        uninfectable = active_nodes.union(immunized_nodes)
 
-        for source in recently_infected:
-            neighbours = network.get_neighbors(source)
-            susceptible = set(neighbours) - active_nodes - immunized_nodes
-            if not susceptible:
-                continue
+        susceptible = [
+            v for u in recently_infected
+            for v in network.get_neighbors(u)
+            if v not in uninfectable and (u, v) in self.weights
+        ]
 
-            candidates = np.fromiter(susceptible, dtype=int)
-            infection_probabilities = np.array([
-                self.weights.get((source, target), 0) for target in susceptible
-            ])
+        if not susceptible:
+            return set()
 
-            new_infected_candidates = candidates[
-                np.random.uniform(0, 1, len(candidates)) < infection_probabilities
-            ]
+        probabilities = [
+                self.weights[(u, v)] for u in recently_infected
+                for v in network.get_neighbors(u) if v in susceptible
+                ]
 
-            new_infected.update(new_infected_candidates)
+        infection_outcomes = np.random.rand(len(probabilities)) < probabilities
+        new_infected = {susceptible[i] for i in range(len(susceptible)) if infection_outcomes[i]}
 
         return new_infected
-
-        
-
-
